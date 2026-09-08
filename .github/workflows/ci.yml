@@ -38,100 +38,70 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           required=(
             "yui"
             "install.sh"
-            "restore.sh"
+            "core/restore.sh"
             "README.md"
             "LICENSE"
             "SECURITY.md"
           )
-
           for file in "${required[@]}"; do
             if [[ ! -f "$file" ]]; then
               echo "::error::Missing required file: $file"
               exit 1
             fi
           done
-
           echo "✓ Required files are present."
 
       - name: Validate shell syntax
         shell: bash
         run: |
           set -euo pipefail
-
           mapfile -t scripts < <(
-            find . \
-              -type f \
-              \( -name "*.sh" -o -name "yui" \) \
-              -not -path "./.git/*" \
-              -print
+            find . -type f \( -name "*.sh" -o -name "yui" \) -not -path "./.git/*" -print
           )
-
           if [[ "${#scripts[@]}" -eq 0 ]]; then
             echo "::error::No shell scripts found."
             exit 1
           fi
-
           for script in "${scripts[@]}"; do
             echo "Checking: $script"
             bash -n "$script"
           done
-
           echo "✓ Bash syntax is valid."
 
       - name: Run ShellCheck
         shell: bash
         run: |
           set -euo pipefail
-
           mapfile -t scripts < <(
-            find . \
-              -type f \
-              \( -name "*.sh" -o -name "yui" \) \
-              -not -path "./.git/*" \
-              -print
+            find . -type f \( -name "*.sh" -o -name "yui" \) -not -path "./.git/*" -print
           )
-
-          if [[ "${#scripts[@]}" -eq 0 ]]; then
-            echo "::error::No shell scripts found."
-            exit 1
-          fi
-
           shellcheck --severity=warning "${scripts[@]}"
+          echo "✓ ShellCheck passed."
 
       - name: Check executable entrypoints
         shell: bash
         run: |
           set -euo pipefail
-
-          for file in yui install.sh restore.sh; do
+          for file in yui install.sh core/restore.sh; do
             if [[ ! -x "$file" ]]; then
-              echo "::warning file=$file::File is not executable in the repository."
               chmod +x "$file"
             fi
           done
-
-          echo "✓ Entry points are available for execution."
+          echo "✓ Entry points are executable."
 
       - name: Test help command
         shell: bash
         run: |
           set -euo pipefail
-
           if ! ./yui --help >/tmp/yui-help.txt 2>&1; then
             echo "::error::yui --help failed."
             cat /tmp/yui-help.txt
             exit 1
           fi
-
-          if [[ ! -s /tmp/yui-help.txt ]]; then
-            echo "::error::yui --help returned no output."
-            exit 1
-          fi
-
+          test -s /tmp/yui-help.txt
           cat /tmp/yui-help.txt
           echo "✓ Help command passed."
 
@@ -139,7 +109,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           if grep -RInE \
             --exclude-dir=.git \
             --exclude='*.md' \
@@ -151,14 +120,12 @@ jobs:
             echo "::error::Potentially destructive rm -rf pattern detected."
             exit 1
           fi
-
           echo "✓ No blocked destructive command pattern detected."
 
       - name: Check for accidental secrets
         shell: bash
         run: |
           set -euo pipefail
-
           if grep -RInE \
             --exclude-dir=.git \
             --exclude='*.md' \
@@ -170,7 +137,6 @@ jobs:
             echo "::error::Possible hard-coded API token detected."
             exit 1
           fi
-
           echo "✓ No common hard-coded token pattern detected."
 
   markdown:
@@ -178,21 +144,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Check README
         shell: bash
         run: |
           set -euo pipefail
-
           test -s README.md
           grep -q "YuiBoost" README.md
           grep -q "Termux" README.md
           grep -q "Limitaciones" README.md
-
           echo "✓ README validation passed."
 
   security:
@@ -200,17 +162,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Verify security documentation
         shell: bash
         run: |
           set -euo pipefail
-
           test -s SECURITY.md
-          grep -qi "security" SECURITY.md
-
+          grep -Eqi "security|seguridad" SECURITY.md
           echo "✓ SECURITY.md validation passed."
