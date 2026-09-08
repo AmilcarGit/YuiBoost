@@ -1,8 +1,6 @@
 # 🌿 YuiBoost
 
-<p align="center">
-  <img src="assets/yuiboost-cover.png" alt="YuiBoost" width="100%">
-</p>
+<a href='https://postimg.cc/1fzHs1Sp' target='_blank'><img src='https://i.postimg.cc/L6t0km00/file-00000000f5a4820e990d0d703c0e9cb8.png' border='0' alt='file-00000000f5a4820e990d0d703c0e9cb8'></a>
 
 <p align="center">
   <strong>Optimización real para Android desde Termux.</strong><br>
