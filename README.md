@@ -1,451 +1,188 @@
 # 🌿 YuiBoost
 
-<a href='https://postimg.cc/1fzHs1Sp' target='_blank'><img src='https://i.postimg.cc/L6t0km00/file-00000000f5a4820e990d0d703c0e9cb8.png' border='0' alt='file-00000000f5a4820e990d0d703c0e9cb8'></a>
+Herramienta de optimización **real** para Android, ejecutada desde Termux.
+Sin placebos, sin promesas falsas: cada acción que YuiBoost aplica es una
+acción que realmente puede ejecutar Termux con los permisos disponibles —
+y cuando no puede, te lo dice claramente en vez de fingir que lo hizo.
 
-<p align="center">
-  <strong>Optimización real para Android desde Termux.</strong><br>
-  Sin promesas falsas. Sin telemetría. Con cambios medibles y reversibles.
-</p>
+## Qué es YuiBoost
 
-<p align="center">
-  <a href="#-características">Características</a> •
-  <a href="#-instalación">Instalación</a> •
-  <a href="#-uso">Uso</a> •
-  <a href="#-seguridad">Seguridad</a> •
-  <a href="#-limitaciones">Limitaciones</a>
-</p>
+YuiBoost es un conjunto de scripts de Bash, pensados para Termux, que:
 
----
+- **Diagnostican** tu dispositivo (Android, CPU, RAM, batería, temperatura,
+  almacenamiento, permisos) usando solo lo que el sistema expone sin ROOT.
+- **Limpian** de forma segura la caché propia de Termux, nunca tus archivos.
+- **Miden** con un benchmark real (no inventado) si algo cambió.
+- **Aplican** un puñado de optimizaciones legítimas — sync de disco, limpieza
+  de paquetes, y el gobernador de CPU *solo si tienes ROOT* — y **registran**
+  cada cambio para poder deshacerlo con `./yui restore`.
 
-## ✨ ¿Qué es YuiBoost?
+## Qué hace realmente
 
-**YuiBoost** es una herramienta de línea de comandos para **Android + Termux** enfocada en diagnóstico, mantenimiento y optimización segura.
+| Función | Sin ROOT/ADB | Con ROOT |
+|---|---|---|
+| Diagnóstico (Android, CPU, RAM, almacenamiento) | ✅ Completo | ✅ Completo |
+| Temperatura | ✅ Si el kernel expone `/sys/class/thermal`, o con Termux:API | ✅ |
+| Batería | ✅ Con Termux:API o `/sys/class/power_supply` | ✅ |
+| Limpieza de caché de Termux | ✅ | ✅ |
+| `sync` de disco | ✅ | ✅ |
+| `apt-get clean` (paquetes de Termux) | ✅ | ✅ |
+| Gobernador de CPU → `performance` | ❌ Se avisa y se omite | ✅ Se aplica y se registra |
+| Benchmark CPU/disco/RAM antes-después | ✅ | ✅ |
+| Restaurar cambios | ✅ | ✅ |
 
-El proyecto está diseñado con una regla fundamental:
-
-> **Si una optimización no puede demostrarse o Android no permite aplicarla con los permisos disponibles, YuiBoost no fingirá que funciona.**
-
-YuiBoost detecta las capacidades del dispositivo antes de ejecutar acciones y diferencia claramente entre funciones disponibles con permisos normales, **Termux:API**, **ADB** o **ROOT**.
-
-### 🎯 Filosofía
-
-- ⚡ Optimizar lo que realmente puede optimizarse.
-- 📊 Medir antes y después cuando sea posible.
-- 🛡️ No tocar partes críticas del sistema sin autorización.
-- 🔄 Poder revertir los cambios realizados.
-- 🔒 No recopilar información personal.
-- 🚫 No vender humo con supuestos "boosters" mágicos.
-
----
-
-## 🚀 Características
-
-| Función | Descripción |
-|---|---|
-| 🎮 Gaming | Perfil de mantenimiento y optimización compatible con los permisos disponibles |
-| ⚡ Optimización | Revisión y aplicación de ajustes seguros |
-| 🧹 Limpieza | Limpieza controlada de archivos temporales accesibles |
-| 📊 Diagnóstico | Estado del dispositivo, CPU, RAM, batería y almacenamiento |
-| 🌡️ Temperatura | Lectura de temperatura cuando Android/Termux la expone |
-| 🔋 Batería | Nivel, estado y datos disponibles |
-| 🧠 CPU/RAM | Información del hardware y memoria |
-| 📈 Benchmark | Comparación de métricas antes/después |
-| 🛡️ Permisos | Detección de ROOT, ADB y capacidades disponibles |
-| 🔄 Restauración | Registro y recuperación de cambios realizados |
-
----
-
-## 📱 Compatibilidad
-
-Diseñado para:
-
-- Android moderno
-- Termux
-- Arquitecturas ARM/ARM64 y otras soportadas por Termux
-- Dispositivos con o sin ROOT
-
-Algunas funciones dependen directamente de la versión de Android, fabricante y permisos disponibles.
-
-### 🔐 Niveles de acceso
-
-**Sin ROOT**
-
-Funciones normales de Termux y diagnóstico.
-
-**Termux:API**
-
-Permite acceder a información adicional del dispositivo cuando la aplicación complementaria está instalada y autorizada.
-
-**ADB**
-
-Puede habilitar operaciones adicionales que Android no permite desde un Termux normal.
-
-**ROOT**
-
-Permite operaciones avanzadas, pero YuiBoost debe detectarlo explícitamente antes de intentar utilizarlas.
-
-> YuiBoost nunca debe asumir que ROOT o ADB existen.
-
----
-
-# 📥 Instalación
-
-## Método recomendado
-
-Instala Termux desde una fuente confiable y abre una sesión.
-
-Después:
+## Instalación
 
 ```bash
 pkg update -y
-pkg upgrade -y
 pkg install git -y
-
 git clone https://github.com/AmilcarGit/YuiBoost.git
 cd YuiBoost
-
-chmod +x yui install.sh
-./install.sh
-```
-
-Después de la instalación:
-
-```bash
-yui
-```
-
-También puedes ejecutar directamente:
-
-```bash
+chmod +x yui
 ./yui
 ```
 
----
-
-# 🎮 Uso
-
-Al iniciar YuiBoost aparecerá el menú principal:
-
-```text
-╭────────────────────────────────────╮
-│          🌿 YUI BOOST ⚡            │
-│       Android Optimization CLI      │
-╰────────────────────────────────────╯
-
-  [1] 🎮 Modo Gaming
-  [2] ⚡ Optimizar
-  [3] 🧹 Limpiar
-  [4] 📊 Diagnóstico
-  [5] 🌡️ Temperatura
-  [6] 🔋 Batería
-  [7] 📈 Benchmark
-  [8] 🔄 Restaurar
-  [9] ⚙️ Configuración
-  [0] ❌ Salir
-```
-
----
-
-## 🩺 Diagnóstico
-
-Antes de modificar nada puedes ejecutar:
+O usando el instalador, que además intenta dejar el comando `yui` disponible
+desde cualquier carpeta:
 
 ```bash
-yui diagnostic
+./install.sh
 ```
 
-El diagnóstico puede mostrar, cuando el sistema lo permite:
-
-```text
-📱 Dispositivo
-Android: 15
-Arquitectura: arm64
-
-🧠 Memoria
-RAM total: ...
-RAM disponible: ...
-
-⚙️ CPU
-Núcleos: ...
-Arquitectura: ...
-
-🌡️ Temperatura
-Estado: ...
-
-🔋 Batería
-Nivel: ...
-
-🛡️ Permisos
-ROOT: ❌
-ADB: ❌
-Termux: ✓
-```
-
-Los valores reales dependen de lo que Android exponga al entorno.
-
----
-
-# 🎮 Modo Gaming
+Para desinstalar el enlace global (el repositorio no se borra solo):
 
 ```bash
-yui gaming
+./uninstall.sh
 ```
 
-El modo Gaming está pensado para preparar el entorno de forma segura.
+## Uso
 
-YuiBoost **no promete aumentar mágicamente los FPS**.
+```
+🌿 YUI BOOST
 
-Puede realizar únicamente acciones que:
-
-1. Sean compatibles con el dispositivo.
-2. Estén disponibles con los permisos actuales.
-3. No comprometan procesos críticos.
-4. Puedan registrarse correctamente.
-5. Sean reversibles cuando corresponda.
-
-Si una función necesita ROOT o ADB:
-
-```text
-⚠ ROOT/ADB requerido
-
-No se aplicó esta modificación.
+ 1. 🎮 Gaming
+ 2. ⚡ Optimizar
+ 3. 🧹 Limpiar
+ 4. 📊 Diagnóstico
+ 5. 🌡️  Temperatura
+ 6. 🔋 Batería
+ 7. 📈 Benchmark
+ 8. 🔄 Restaurar
+ 9. ⚙️  Configuración
+ 0. ❌ Salir
 ```
 
-Eso es intencional.
-
----
-
-# 🧹 Limpieza segura
+También puedes ejecutar acciones directamente:
 
 ```bash
-yui clean
+./yui gaming
+./yui optimize
+./yui clean
+./yui diagnostic
+./yui temperature
+./yui battery
+./yui benchmark
+./yui restore
 ```
 
-Antes de eliminar archivos, YuiBoost debe:
+## Filosofía
 
-1. Identificar la ruta.
-2. Calcular el tamaño.
-3. Mostrar lo que será eliminado.
-4. Solicitar confirmación.
-5. Ejecutar únicamente rutas permitidas.
+YuiBoost no es un "booster" mágico. Android impone límites importantes y
+Termux no puede cambiar arbitrariamente el kernel, la GPU, la memoria física
+o los procesos de otras aplicaciones.
 
-### 🚫 Nunca debe eliminar automáticamente
+Por eso el proyecto sigue estas reglas:
 
-- Fotos
-- Vídeos
-- Documentos
-- Contactos
-- Mensajes
-- Bases de datos personales
-- Aplicaciones
-- Carpetas de WhatsApp
-- Archivos fuera de las rutas permitidas
+- ⚡ Solo aplicar cambios técnicamente posibles.
+- 📊 Medir en lugar de inventar resultados.
+- 🛡️ Detectar permisos antes de intentar operaciones avanzadas.
+- 🔄 Registrar cambios y permitir restaurarlos cuando sea posible.
+- 🔒 Mantener el funcionamiento local y minimizar la exposición de datos.
+- 🚫 No descargar ni ejecutar scripts remotos desconocidos automáticamente.
 
----
+## Modo Gaming
 
-# 📈 Benchmark
+El modo Gaming prepara el entorno con las operaciones que realmente están
+disponibles en el dispositivo. No promete FPS específicos ni overclocking
+mágico.
 
-Ejecuta:
+Si una acción requiere ROOT o no está disponible, YuiBoost la omite y lo
+indica claramente.
 
-```bash
-yui benchmark
-```
+## Seguridad
 
-La idea es comparar métricas reales:
+YuiBoost evita operaciones destructivas y mantiene las modificaciones dentro
+de rutas y capacidades permitidas.
 
-```text
-╭────────────── BENCHMARK ──────────────╮
-
-ANTES
-CPU        : ...
-RAM        : ...
-Temperatura: ...
-Storage    : ...
-
-Aplicando operaciones...
-
-DESPUÉS
-CPU        : ...
-RAM        : ...
-Temperatura: ...
-Storage    : ...
-
-Resultado:
-✓ Datos recopilados correctamente
-```
-
-Si no existe una diferencia significativa:
-
-```text
-Sin mejora significativa detectada.
-```
-
-**No se inventan porcentajes.**
-
----
-
-# 🔄 Restauración
-
-Antes de realizar modificaciones, YuiBoost debe registrar los valores originales cuando sea técnicamente posible.
-
-Para restaurar:
-
-```bash
-yui restore
-```
-
-También puede existir:
-
-```bash
-./restore.sh
-```
-
-Si no existen cambios registrados:
-
-```text
-✓ No hay cambios para restaurar.
-```
-
----
-
-# 🛡️ Seguridad
-
-YuiBoost está pensado para ser una herramienta de mantenimiento, no un script destructivo.
-
-### Principios de seguridad
-
-- Validación de argumentos.
-- Validación de comandos disponibles.
-- Detección de ROOT.
-- Detección de ADB.
-- Backups antes de modificaciones.
-- Registro de operaciones.
-- Rutas permitidas para limpieza.
-- Sin ejecución de código remoto desconocido.
-- Sin descarga y ejecución automática de scripts externos.
-- Sin modificaciones silenciosas.
-- Confirmación antes de operaciones destructivas.
-- Restauración de cambios cuando sea posible.
-
-### 🚫 No hacer
-
-YuiBoost no debe utilizar:
+Nunca debe utilizar comandos peligrosos como:
 
 ```bash
 rm -rf /
 ```
 
-ni variantes peligrosas.
+Tampoco modifica `/system`, `/vendor`, `/data` ni particiones críticas sin una
+implementación explícita, permisos adecuados, respaldo y validación.
 
-Tampoco debe modificar:
-
-- `/system`
-- `/vendor`
-- `/data`
-- particiones críticas
-- configuraciones de seguridad
-
-sin una implementación explícita, permisos adecuados, backup y validación.
-
----
-
-# 🔒 Privacidad
-
-YuiBoost está diseñado para funcionar localmente.
-
-No debe recopilar ni enviar:
-
-- IMEI
-- número telefónico
-- contactos
-- mensajes
-- fotos
-- vídeos
-- ubicación
-- archivos personales
-
-Tampoco necesita un servidor remoto para realizar sus funciones principales.
-
----
-
-# ❗ Limitaciones reales
-
-Android tiene restricciones importantes.
-
-YuiBoost **NO puede garantizar**:
-
-- +100 FPS
-- +200% de rendimiento
-- Menor ping automáticamente
-- Overclock de CPU
-- Overclock de GPU
-- Más RAM física
-- Batería infinita
-- Eliminar el thermal throttling sin consecuencias
-- Convertir un teléfono básico en uno de gama alta
-
-### ¿Por qué?
-
-Porque muchas de esas funciones requieren acceso que una aplicación normal o Termux no posee.
-
-Además, el rendimiento de un juego depende de factores como:
-
-- GPU
-- CPU
-- temperatura
-- memoria
-- optimización del juego
-- versión de Android
-- controladores
-- resolución
-- configuración gráfica
-- carga del sistema
-
-Por eso YuiBoost prioriza **mediciones reales sobre promesas**.
-
----
-
-# 🧪 Calidad del proyecto
-
-Antes de cada release se recomienda ejecutar:
+Antes de una release se recomienda comprobar la sintaxis con:
 
 ```bash
 bash -n yui
 bash -n install.sh
-bash -n restore.sh
+bash -n uninstall.sh
 ```
 
-Si `shellcheck` está instalado:
+Y, si está disponible:
 
 ```bash
-shellcheck yui
-shellcheck install.sh
-shellcheck restore.sh
+shellcheck yui install.sh uninstall.sh
 ```
 
-Y probar:
+## Compatibilidad
 
-```bash
-./yui --help
-./yui diagnostic
-```
+Diseñado para Android con Termux. Algunas funciones dependen de la versión
+de Android, fabricante, kernel y permisos disponibles.
 
-Las pruebas deben realizarse en un dispositivo Android/Termux real además de cualquier entorno de desarrollo.
+- **Sin ROOT:** diagnóstico, limpieza propia de Termux y otras funciones
+  disponibles desde el espacio de usuario.
+- **Termux:API:** puede proporcionar información adicional del dispositivo.
+- **ADB:** puede permitir operaciones adicionales si se configura de forma
+  explícita.
+- **ROOT:** habilita algunas operaciones avanzadas que YuiBoost detecta antes
+  de intentar utilizar.
 
----
+YuiBoost nunca debe asumir que ROOT, ADB o Termux:API están disponibles.
 
-# 📂 Estructura recomendada
+## Privacidad
+
+El proyecto está diseñado para funcionar localmente. No necesita un servidor
+remoto para sus funciones principales y no debe recopilar credenciales,
+mensajes, contactos, fotos, vídeos, ubicación ni otros datos personales.
+
+## Limitaciones reales
+
+YuiBoost **no garantiza**:
+
+- +100 FPS o porcentajes concretos de rendimiento.
+- Menor ping automáticamente.
+- Overclock de CPU/GPU.
+- Más RAM física.
+- Batería infinita.
+- Eliminación segura del thermal throttling.
+- Convertir un teléfono básico en uno de gama alta.
+
+El resultado depende del hardware, GPU, CPU, temperatura, memoria, versión de
+Android, controladores, resolución, configuración gráfica y carga del sistema.
+
+## Estructura
 
 ```text
 YuiBoost/
 ├── yui
 ├── install.sh
 ├── uninstall.sh
-├── restore.sh
-│
 ├── core/
-│   └── ...
-│
+│   ├── menu.sh
+│   └── restore.sh
 ├── modules/
 │   ├── gaming.sh
 │   ├── optimize.sh
@@ -454,64 +191,34 @@ YuiBoost/
 │   ├── battery.sh
 │   ├── temperature.sh
 │   └── benchmark.sh
-│
 ├── utils/
 │   ├── colors.sh
 │   ├── permissions.sh
 │   ├── logging.sh
 │   └── detection.sh
-│
 ├── config/
 ├── backups/
 ├── logs/
-│
-├── assets/
-│   └── yuiboost-cover.png
-│
 ├── README.md
 ├── CHANGELOG.md
 ├── SECURITY.md
 └── LICENSE
 ```
 
----
+## 🤝 Contribuir
 
-# 🌿 Estilo Yui
+Las contribuciones son bienvenidas. Antes de enviar cambios:
 
-YuiBoost utiliza una identidad visual inspirada en:
+1. Prueba el código en Termux cuando sea posible.
+2. No agregues comandos destructivos.
+3. No presentes optimizaciones sin evidencia.
+4. Documenta requisitos de ROOT/ADB/Termux:API.
+5. Ejecuta ShellCheck cuando sea posible.
+6. Mantén la interfaz y la documentación consistentes.
 
-```text
-🌿 Naturaleza
-🦋 Yui
-⚡ Tecnología
-💻 Termux
-🎮 Gaming
-🛡️ Seguridad
-```
+## 🐛 Reportar errores
 
-La interfaz debe mantenerse sencilla, rápida y agradable incluso en terminales pequeñas.
-
----
-
-# 🤝 Contribuir
-
-Las contribuciones son bienvenidas.
-
-Antes de enviar un Pull Request:
-
-1. Prueba el código.
-2. Comprueba compatibilidad con Termux.
-3. No agregues comandos destructivos.
-4. No agregues "optimizaciones" sin evidencia.
-5. Documenta requisitos de ROOT/ADB.
-6. Ejecuta ShellCheck cuando sea posible.
-7. Mantén la interfaz consistente.
-
----
-
-# 🐛 Reportar errores
-
-Al reportar un problema incluye, si es posible:
+Incluye, cuando sea posible:
 
 ```text
 Android:
@@ -525,60 +232,45 @@ Comando ejecutado:
 Mensaje de error:
 ```
 
-Nunca publiques información personal o credenciales.
+No publiques credenciales ni información personal.
 
----
+## 🗺️ Roadmap
 
-# 🗺️ Roadmap
-
-## v0.1.x
+### v0.1.x
 
 - [x] CLI inicial
-- [ ] Diagnóstico
-- [ ] Detección de permisos
-- [ ] Limpieza segura
-- [ ] Sistema de logs
-- [ ] Restauración
+- [x] Diagnóstico
+- [x] Detección de permisos
+- [x] Limpieza segura
+- [x] Sistema de logs
+- [x] Restauración
 
-## v0.2.x
+### v0.2.x
 
-- [ ] Modo Gaming
-- [ ] Benchmark
-- [ ] Monitor de temperatura
+- [x] Modo Gaming
+- [x] Benchmark
+- [x] Monitor de temperatura
 - [ ] Integración opcional con Termux:API
 - [ ] Mejor detección de Android
 
-## v0.3.x
+### v0.3.x
 
 - [ ] Soporte avanzado ADB
 - [ ] Perfiles configurables
-- [ ] Comparaciones antes/después
+- [ ] Comparaciones antes/después más completas
 - [ ] Más pruebas en dispositivos reales
 
-## v1.0.0
+### v1.0.0
 
 - [ ] API estable
 - [ ] Documentación completa
 - [ ] Compatibilidad ampliada
 - [ ] Sistema de plugins cuidadosamente aislado
 
----
+## 📜 Licencia
 
-# 📜 Licencia
-
-Este proyecto se distribuirá bajo la licencia indicada en `LICENSE`.
-
-Consulta el archivo `LICENSE` antes de redistribuir o modificar el proyecto.
-
----
-
-# ⚠️ Aviso
-
-YuiBoost es una herramienta de mantenimiento y diagnóstico.
-
-El rendimiento final depende del hardware, Android, temperatura, aplicaciones y juegos utilizados.
-
-**Ninguna función debe presentarse como garantía de aumento de FPS, potencia o duración de batería.**
+Este proyecto se distribuye bajo la licencia MIT. Consulta `LICENSE` para los
+términos completos.
 
 ---
 
