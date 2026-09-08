@@ -72,7 +72,7 @@ Para desinstalar el enlace global (el repositorio no se borra solo):
  0. ❌ Salir
 ```
 
-También puedes ejecutar acciones directamente:
+### Acciones directas
 
 ```bash
 ./yui gaming
