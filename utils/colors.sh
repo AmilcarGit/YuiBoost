@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # CÓDIGO ORIGINAL DE YUIBOOST
+# shellcheck disable=SC2034
 
 YUI_NO_COLOR="${YUI_NO_COLOR:-0}"
 
