@@ -13,7 +13,7 @@ run_restore() {
     fi
 
     printf 'Cambios registrados:\n'
-    local line count=0
+    local count=0
     while IFS='|' read -r date_field target old new; do
         [[ -z "$date_field" ]] && continue
         count=$((count + 1))
