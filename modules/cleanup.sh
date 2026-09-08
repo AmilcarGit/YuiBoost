@@ -41,7 +41,6 @@ run_cleanup() {
         return 0
     fi
 
-    local total_before=0
     printf 'Rutas detectadas:\n'
     local p size
     for p in "${paths[@]}"; do
