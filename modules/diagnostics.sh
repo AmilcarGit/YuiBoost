@@ -42,7 +42,7 @@ run_diagnostics() {
 
 # Prints a compact machine-parseable snapshot used by benchmark before/after diffs.
 diagnostics_snapshot() {
-    read -r ram_total ram_avail <<< "$(detect_ram_raw)"
+    read -r _ ram_avail <<< "$(detect_ram_raw)"
     printf 'cpu_freq=%s\nram_avail_kb=%s\nstorage=%s\n' \
         "$(detect_cpu_freq_current)" \
         "$ram_avail" \
