@@ -1,0 +1,5 @@
+logs/*.log
+logs/.bench_tmp*
+backups/changes.log
+*.tmp
+*.bak
